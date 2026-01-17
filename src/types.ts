@@ -30,6 +30,7 @@ export interface Ticket {
 export interface Project {
   id: number;
   name: string;
+  members?: User[];
 }
 
 

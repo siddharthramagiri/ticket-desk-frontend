@@ -12,6 +12,7 @@ import { LogOut } from "lucide-react";
 import TicketDetailsDialog from "./TicketDetailsDialog";
 import { Status, Ticket } from "@/types";
 import { getStatusColor, PriorityStyles, getStatusIcon } from "@/styles"
+import StatusIcon from "@/components/StatusIcon";
 
 const ClientPage = () => {
   type FilterGroup = "ACTIVE" | "DONE";
@@ -107,7 +108,6 @@ const ClientPage = () => {
             <ScrollArea className="max-h-[70vh]">
               <div className="divide-y divide-gray-100">
                 {filteredTickets.map(ticket => {
-                  const StatusIcon = getStatusIcon(ticket.status)
                   return(
                     <div
                       key={ticket.id}
@@ -131,12 +131,13 @@ const ClientPage = () => {
 
                       {/* Right */}
                       <div className="flex flex-col items-start md:items-end text-sm md:mt-0 gap-1">
-                        <span
-                          className={`grid px-2 py-2 rounded text-xs font-medium whitespace-nowrap gap-2 ${getStatusColor(ticket.status)}`}
+                        <Badge
+                          variant="secondary"
+                          className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(ticket.status)}`}
                         >
-                          <StatusIcon className="items-center"/>
+                          <StatusIcon status={ticket.status} /> &nbsp;
                           {ticket.status}
-                        </span>
+                        </Badge>
                         <span className="text-gray-500 text-xs">
                           {new Date(ticket.createdAt).toLocaleDateString()}
                         </span>

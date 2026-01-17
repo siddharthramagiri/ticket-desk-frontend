@@ -25,6 +25,7 @@ export function useTickets() {
 
   useEffect(() => {
     loadTickets();
+    
   }, [loadTickets]);
 
   const updateStatusOptimistic = (ticketId, status) => {

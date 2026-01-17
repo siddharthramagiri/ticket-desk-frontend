@@ -136,9 +136,65 @@ export async function updateStatus(id, newStatus) {
 export async function assignTicketToDeveloper(id: number, userId?: string, projectId?: string ) {
     
     const res = await call_api(`${API_URL}/support/assign/${id}`, "POST", {userId, projectId});
-    
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
     const data = await res.json();
     console.log(data);
     
     return data;
+}
+
+
+export async function createNewProject({name, members}: {name:string, members:User[]}) : Promise<Project> {
+
+    const res = await call_api(`${API_URL}/private/create-project`, "POST", {name, users: members} );
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    return await res.json();
+}
+
+export async function getAllProjects() : Promise<Project[]> {
+    const res = await call_api(`${API_URL}/private/myProjects`, "GET");
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    return await res.json();
+}
+
+
+export async function removeTicketAssignee(ticketId: string, id: string) {
+    const res = await call_api(`${API_URL}/delete/${ticketId}/assign?id=${id}`, "DELETE");
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+    return await res.json();
+}
+
+
+export async function fetchPersonalTickets() : Promise<Ticket[]> {
+
+    const res = await call_api(`${API_URL}/private/get-my-tickets`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data
+}
+
+
+export async function fetchProjectTickets(id: number) {
+    const res = await call_api(`${API_URL}/private/get-project-tickets/${id}`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data
 }

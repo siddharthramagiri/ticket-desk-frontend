@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
-import { MessageSquare, Sparkles, Send, User as UserIcon, Clock, AlertCircle, LogOut, TicketsPlane, RefreshCwIcon, CheckIcon } from 'lucide-react';
-import { Card, CardContent, CardTitle, CardDescription, CardHeader } from "@/components/ui/card";
+import { useState, useMemo } from 'react';
+import { User as UserIcon, Clock, AlertCircle, LogOut, RefreshCwIcon } from 'lucide-react';
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -9,15 +9,10 @@ import { Status } from '@/types';
 import { getStatusColor, getStatusIcon } from "@/styles"
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useAssignmentData } from '@/hooks/useAssignmentData';
 import { useTickets } from '@/hooks/useTickets';
-import { assignTicketToDeveloper } from '@/services/api';
+import TicketDetails from './TicketDetails';
+import StatusIcon from '@/components/StatusIcon';
 
 const SupportPage = () => {
   type IssueStatus = Status | "ALL";
@@ -26,63 +21,21 @@ const SupportPage = () => {
   const [assignType, setAssignType] = useState<"USER" | "PROJECT">("USER");
   const { 
     tickets, error,
-    loading: ticketsLoading, 
+    loading: ticketsLoading,
     reload: reloadTickets, 
     changeStatus,
   } = useTickets();
-  
-  const { 
-    developers, projects, 
-    loading: assignmentLoading
-  } = useAssignmentData();
 
-  const navigate = useNavigate();
-  
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [newComment, setNewComment] = useState('');
 
-  
   const selectedTicket = useMemo(
     () => tickets.find(t => t.id === selectedTicketId) ?? null,
     [tickets, selectedTicketId]
   );
 
-  const [draftStatus, setDraftStatus] = useState<Status>(selectedTicket?.status ?? "OPEN");
-  const [draftAssignee, setDraftAssignee] = useState<{ userId?: string; projectId?: string }>({});
-
-  useEffect(() => {
-    if (selectedTicket) {
-      setDraftStatus(selectedTicket.status);
-      setDraftAssignee({});
-    }
-  }, [selectedTicket]);
-
-  const handleSave = async () => {
-    try {
-      if (draftStatus !== selectedTicket.status) {
-        await changeStatus(selectedTicket.id, draftStatus);
-      }
-
-      if (draftAssignee.userId || draftAssignee.projectId) {
-        await assignTicket(selectedTicket.id, draftAssignee);
-      }
-
-      alert("Ticket updated successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update ticket.");
-    }
-  };
-  
+  const navigate = useNavigate();
   
   const filteredTickets = filter === 'ALL'? tickets : tickets.filter(t => t.status === filter);
-
-  const assignTicket = async (ticketId: number, payload: { userId?: string; projectId?: string }) => {
-    await assignTicketToDeveloper(ticketId, payload.userId, payload.projectId);
-    reloadTickets();
-  };
 
   // const [formData, setFormData] = useState({
   //   title: '',
@@ -193,6 +146,16 @@ const SupportPage = () => {
     });
   };
 
+  if(ticketsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <h1 className="text-5xl font-thin text-gray-900 text-center">
+          Loading...
+        </h1>
+      </div>
+    )
+  }
+
   return (
     <>
      <Card className="container mx-auto p-6 h-full">
@@ -256,7 +219,6 @@ const SupportPage = () => {
                     <ScrollArea className="h-[75vh] pr-4">
                       <div className="space-y-3">
                         {filteredTickets.map((ticket) => {
-                          const StatusIcon = getStatusIcon(ticket.status)
                           return (
                             <Card
                               key={ticket.id}
@@ -279,7 +241,7 @@ const SupportPage = () => {
                                     variant="secondary"
                                     className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(ticket.status)}`}
                                   >
-                                    <StatusIcon /> &nbsp;
+                                    <StatusIcon status={ticket.status} /> &nbsp;
                                     {ticket.status}
                                   </Badge>
                                 </div>
@@ -310,210 +272,15 @@ const SupportPage = () => {
                 </div>
                 
                 <div>
-                  <ScrollArea className="h-[75vh] pr-4">
-                  <div className="lg:col-span-2 mb-10">
-                    {selectedTicket ? (
-                      <Card>
-                        {/* Header */}
-                        <CardHeader>
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <CardTitle className="text-xl">
-                                {selectedTicket.title}
-                              </CardTitle>
-
-                              <CardDescription className="flex items-center gap-4 mt-2">
-                                <span className="flex items-center gap-1">
-                                  <UserIcon className="w-4 h-4" />
-                                  {selectedTicket.createdBy}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {formatDate(selectedTicket.createdAt)}
-                                </span>
-                              </CardDescription>
-                            </div>
-
-                            <div className="mt-4 flex justify-end gap-3">
-                              <Button
-                                onClick={handleSave}
-                                disabled={
-                                  draftStatus === selectedTicket.status &&
-                                  !draftAssignee.userId &&
-                                  !draftAssignee.projectId
-                                }
-                              >
-                                <CheckIcon />
-                              </Button>
-
-                              <Select
-                                value={draftStatus}
-                                onValueChange={(value) => setDraftStatus(value as Status)}
-                              >
-                                <SelectTrigger className="w-40">
-                                  <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="OPEN">Open</SelectItem>
-                                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                                  <SelectItem value="RESOLVED">Resolved</SelectItem>
-                                  <SelectItem value="CLOSED">Closed</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                          </div>
-                          <div>
-                            {selectedTicket.status === "OPEN" && (
-                              <Card>
-                                <CardContent className="space-y-4 pt-4 justify-between">
-                                    <h4 className="font-semibold">Assign Ticket</h4>
-
-                                    {/* Choose assignment type */}
-                                    <div className="flex items-center gap-3">
-                                      <Label>Single Developer</Label>
-                                      <Switch
-                                        checked={assignType === "PROJECT"}
-                                        onCheckedChange={(checked) =>
-                                          setAssignType(checked ? "PROJECT" : "USER")
-                                        }
-                                      />
-                                      <Label>Project Team</Label>
-                                    </div>
-
-                                    {/* Assign to User */}
-                                    {assignType === "USER" && (
-                                      <Select
-                                      onValueChange={(userId) =>
-                                        setDraftAssignee({ userId })
-                                      }
-                                      >
-                                        <SelectTrigger className="w-64">
-                                          <SelectValue placeholder="Select Developer" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {developers.map((dev) => (
-                                            <SelectItem key={dev.id} value={String(dev.id)}>
-                                              {dev.email}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    )}
-
-                                    {/* Assign to Project */}
-                                    {assignType === "PROJECT" && (
-                                      <Select
-                                      onValueChange={(projectId) =>
-                                        setDraftAssignee({ projectId })
-                                      }
-                                      >
-                                        <SelectTrigger className="w-64">
-                                          <SelectValue placeholder="Select Project Team" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {projects.map((project) => (
-                                            <SelectItem key={project.id} value={String(project.id)}>
-                                              {project.name}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    )}
-                                </CardContent>
-                              </Card>
-                            )}
-                            
-                          </div>
-                        </CardHeader>
-
-                        <Separator />
-
-                        {/* Description */}
-                        <CardContent className="pt-6">
-                          <p className="text-sm text-muted-foreground">
-                            {selectedTicket.description}
-                          </p>
-                        </CardContent>
-
-                        <Separator />
-
-                        {/* Comments */}
-                        <CardContent>
-                          <h3 className="font-semibold flex items-center gap-2 mb-4">
-                            <MessageSquare className="w-5 h-5" />
-                            Activity & Comments
-                          </h3>
-
-                          {/* <div className="space-y-4 mb-6">
-                            {selectedTicket.comments.length === 0 ? (
-                              <p className="text-sm text-muted-foreground">
-                                No comments yet
-                              </p>
-                            ) : (
-                              selectedTicket.comments.map((comment, idx) => (
-                                <Card key={idx} className="bg-muted/50">
-                                  <CardContent className="p-4">
-                                    <div className="flex justify-between mb-2">
-                                      <span className="text-sm font-medium">
-                                        {comment.author}
-                                      </span>
-                                      <span className="text-xs text-muted-foreground">
-                                        {formatDate(comment.timestamp)}
-                                      </span>
-                                    </div>
-                                    <p className="text-sm">{comment.text}</p>
-                                  </CardContent>
-                                </Card>
-                              ))
-                            )}
-                          </div> */}
-
-                          <Separator className="mb-6" />
-
-                          {/* Add Comment */}
-                          <div className="space-y-4">
-                            <Button
-                              disabled={isGenerating}
-                              variant="outline"
-                              className="flex items-center gap-2 text-purple-800 border-purple-800 hover:text-purple-600
-                                bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100"
-                            >
-                              <Sparkles className="w-4 h-4" />
-                              {isGenerating ? "Generating..." : "Draft AI Reply"}
-                            </Button>
-
-                            <Textarea
-                              value={newComment}
-                              onChange={(e) => setNewComment(e.target.value)}
-                              placeholder="Add a comment or use AI to draft a reply..."
-                            />
-
-                            <div className="flex justify-end">
-                              <Button
-                                disabled={!newComment.trim()}
-                                className="flex items-center gap-2"
-                              >
-                                <Send className="w-4 h-4" />
-                                Add Comment
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : (
-                      <Card className="p-12 text-center">
-                        <TicketsPlane className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                        <CardTitle>Select a ticket</CardTitle>
-                        <CardDescription className="mt-2">
-                          Choose a ticket from the list to view details and add comments
-                        </CardDescription>
-                      </Card>
-                    )}
-                  </div>
-                  </ScrollArea>
+                  <TicketDetails 
+                    selectedTicket={selectedTicket}
+                    assignType={assignType} setAssignType={setAssignType}
+                    reloadTickets={reloadTickets} changeStatus={changeStatus}
+                  />
                 </div>
+                
               </div>
+
             </ScrollArea>
           </CardContent>
         </Card>

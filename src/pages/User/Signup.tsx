@@ -161,7 +161,7 @@ const SignUp = () => {
               type="submit"
               variant="outline"
               disabled={!isFormValid}
-              className="w-full bg-blue-500 text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-500 text-white hover:bg-blue-600 hover:text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Create Account
             </Button>
@@ -195,7 +195,7 @@ const SignUp = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-200 opacity-90" />
         <img
           src="Logo.png"
-          alt="Team collaboration"
+          alt="Ticket Desk"
           className="h-full w-full object-cover opacity-40"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-gray-900">

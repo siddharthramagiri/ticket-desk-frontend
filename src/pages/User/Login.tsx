@@ -65,7 +65,7 @@ const Login = () => {
               <br />
               <Button
                 variant="outline"
-                className="text-white bg-blue-600 border-none hover:bg-blue-700"
+                className="text-white bg-blue-500 border-none hover:bg-blue-600 hover:text-white"
                 type="submit"
               >
                 Login
@@ -101,7 +101,7 @@ const Login = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-90"></div>
         <img
           src="Logo.png"
-          alt="Team collaboration"
+          alt="Ticket Desk"
           className="h-full w-full object-cover opacity-40"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-gray-900">
