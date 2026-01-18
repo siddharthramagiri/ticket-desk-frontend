@@ -1,28 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogPortal, DialogOverlay } from '@/components/ui/dialog';
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Ticket } from '@/types';
-import { getStatusColor, PriorityStyles } from '@/styles';
+import { Status, Ticket } from '@/types';
+import { getStatusColor } from '@/styles';
 import StatusIcon from '@/components/StatusIcon';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, MessageSquare, Send, UserIcon } from 'lucide-react';
+import { CheckIcon, Clock, MessageSquare, Send, UserIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useComments } from '@/hooks/useComments';
 
 
 type TicketDetailsDialogProps = {
   ticket: Ticket | null;
   open: boolean;
   onClose: () => void;
+  changeStatus: (id:number, status: Status) => void;
 };
 
-function TicketDetailsDialog({
-  ticket,
-  open,
-  onClose,
-}: TicketDetailsDialogProps) {
+function TicketDetailsDialog({ ticket, open, onClose, changeStatus }: TicketDetailsDialogProps) {
+
   if (!ticket) return null;
 
 
@@ -35,8 +35,35 @@ function TicketDetailsDialog({
     });
   };
 
-  
+  const [status, setStatus] = useState<Status>(ticket.status);
+  const [saving, setSaving] = useState(false);
   const [newComment, setNewComment] = useState('');
+
+  const {comments, commentsLoading, error, sendComment, loadComments } = useComments(ticket);
+
+  useEffect(() => {
+    loadComments();
+  }, [])
+
+  
+  const handleSave = async () => {
+    if (!ticket) return;
+    try {
+      setSaving(true);
+
+      if (ticket.status !== status) {
+        await changeStatus(ticket.id, status);
+        ticket.status = status;
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update ticket.");
+    } finally {
+      setSaving(false);
+    }
+  }
+            
     
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -66,6 +93,25 @@ function TicketDetailsDialog({
                   </div>
 
                   <div className="mt-4 flex justify-end gap-3">
+                      <div className="flex items-center gap-3">
+                        <Select value={status} onValueChange={(value) => setStatus(value as Status)}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Update status" />
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            <SelectItem value="OPEN">Open</SelectItem>
+                            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                            <SelectItem value="RESOLVED">Resolved</SelectItem>
+                            <SelectItem value="CLOSED">Closed</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <Button onClick={handleSave} disabled={status === ticket.status || saving}> 
+                          <CheckIcon />
+                        </Button>
+                      </div>
+
                       <Badge
                         variant="secondary"
                         className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(ticket.status)}`}
@@ -114,30 +160,31 @@ function TicketDetailsDialog({
                 Activity & Comments
               </h3>
 
-              {/* <div className="space-y-4 mb-6">
-              {selectedTicket.comments.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                No comments yet
-                </p>
-                ) : (
-                  selectedTicket.comments.map((comment, idx) => (
-                    <Card key={idx} className="bg-muted/50">
-                    <CardContent className="p-4">
-                    <div className="flex justify-between mb-2">
-                    <span className="text-sm font-medium">
-                    {comment.author}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                    {formatDate(comment.timestamp)}
-                    </span>
-                    </div>
-                    <p className="text-sm">{comment.text}</p>
-                    </CardContent>
-                    </Card>
+              <div className="space-y-4 mb-6">
+                {comments.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No comments yet
+                  </p>
+                  ) : (
+                    comments.map((comment, idx) => (
+                      <Card key={idx} className="bg-muted/50">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium">
+                              {comment.user?.email}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDate(comment.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-sm">{comment.comment}</p>
+                        </CardContent>
+                      </Card>
                     ))
-                    )}
-                    </div> 
-              */}
+                  )
+                }
+              </div> 
+             
             </CardContent>
 
               {/* Add Comment */}
@@ -155,8 +202,9 @@ function TicketDetailsDialog({
                   <Button
                     disabled={!newComment.trim()}
                     className="flex items-center gap-2"
+                    onClick={() => sendComment(newComment)}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4"/>
                     Add Comment
                   </Button>
                 </div>

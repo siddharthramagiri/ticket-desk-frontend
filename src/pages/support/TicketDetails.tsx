@@ -11,6 +11,7 @@ import { Status } from '@/types';
 import { useAssignmentData } from '@/hooks/useAssignmentData';
 import { useEffect, useMemo, useState } from 'react';
 import { assignTicketToDeveloper, removeTicketAssignee } from '@/services/api';
+import { useComments } from '@/hooks/useComments';
 
 
 
@@ -20,11 +21,11 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
     const [draftAssignees, setDraftAssignees] = useState<
         { id?: number; userId?: string; projectId?: string }[]
     >([]);
-    const [newComment, setNewComment] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [showCreateForm, setShowCreateForm] = useState(false);
     const [saving, setSaving] = useState(false);
-
+    const [newComment, setNewComment] = useState('');
+    const {comments, commentsLoading, error, sendComment, loadComments } = useComments(selectedTicket);
+    
     const { 
         developers, projects, 
         loading: assignmentLoading
@@ -53,7 +54,7 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
             : prev.filter((_, i) => i !== index)
         );
     };
-
+    
     const handleSave = async () => {
         if (!selectedTicket) return;
         try {
@@ -107,6 +108,8 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
         );
     }, [draftStatus, draftAssignees, selectedTicket]);
 
+
+    
 
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('en-US', { 
@@ -266,67 +269,74 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
                 <Separator />
 
                 {/* Comments */}
-                <CardContent>
+                <CardContent className="flex-1 overflow-y-auto mt-3">
                     <h3 className="font-semibold flex items-center gap-2 mb-4">
-                    <MessageSquare className="w-5 h-5" />
-                    Activity & Comments
+                        <MessageSquare className="w-5 h-5" />
+                        Activity & Comments
                     </h3>
 
-                    {/* <div className="space-y-4 mb-6">
-                    {selectedTicket.comments.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">
-                        No comments yet
-                        </p>
-                    ) : (
-                        selectedTicket.comments.map((comment, idx) => (
-                        <Card key={idx} className="bg-muted/50">
-                            <CardContent className="p-4">
-                            <div className="flex justify-between mb-2">
-                                <span className="text-sm font-medium">
-                                {comment.author}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                {formatDate(comment.timestamp)}
-                                </span>
-                            </div>
-                            <p className="text-sm">{comment.text}</p>
-                            </CardContent>
-                        </Card>
-                        ))
-                    )}
-                    </div> */}
-
-                    <Separator className="mb-6" />
+                    <ScrollArea className="h-64 pr-4 mb-6">
+                        <div className="space-y-4 mb-6">
+                            {comments.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">
+                                    No comments yet
+                                </p>
+                                ) : (
+                                    comments.map((comment, idx) => (
+                                        <Card key={idx} className="bg-muted/50">
+                                        <CardContent className="p-4">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-sm font-medium">
+                                            {comment.user?.email}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground">
+                                            {formatDate(comment.createdAt)}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm">{comment.comment}</p>
+                                        </CardContent>
+                                    </Card>
+                                    ))
+                                )
+                            }
+                        </div>
+                    </ScrollArea>
+                    
+                    </CardContent>
 
                     {/* Add Comment */}
-                    <div className="space-y-4">
-                    <Button
-                        disabled={isGenerating}
-                        variant="outline"
-                        className="flex items-center gap-2 text-purple-800 border-purple-800 hover:text-purple-600
-                        bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100"
-                    >
-                        <Sparkles className="w-4 h-4" />
-                        {isGenerating ? "Generating..." : "Draft AI Reply"}
-                    </Button>
+                    <CardContent className="bg-background">
+                        <div className="space-y-4">
+                            <Button
+                                disabled={isGenerating}
+                                variant="outline"
+                                className="flex items-center gap-2 text-purple-800 border-purple-800 hover:text-purple-600
+                                bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                {isGenerating ? "Generating..." : "Draft AI Reply"}
+                            </Button>
 
-                    <Textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Add a comment or use AI to draft a reply..."
-                    />
+                            <Textarea
+                                rows={4}
+                                className="resize-none"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder="Add a comment or use AI to draft a reply..."
+                            />
 
-                    <div className="flex justify-end">
-                        <Button
-                        disabled={!newComment.trim()}
-                        className="flex items-center gap-2"
-                        >
-                        <Send className="w-4 h-4" />
-                        Add Comment
-                        </Button>
-                    </div>
-                    </div>
-                </CardContent>
+                            <div className="flex justify-end">
+                                <Button
+                                    disabled={!newComment.trim()}
+                                    className="flex items-center gap-2"
+                                    onClick={() => sendComment(newComment)}
+                                >
+                                    <Send className="w-4 h-4"/>
+                                    Add Comment
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
                 </Card>
             ) : (
                 <Card className="p-12 text-center">

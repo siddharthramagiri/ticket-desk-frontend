@@ -1,4 +1,4 @@
-import { Project, Role, Ticket, User } from "@/types";
+import { Project, Role, Ticket, TicketComment, User } from "@/types";
 import config from "./config";
 
 const API_URL = config.apiUrl;
@@ -190,6 +190,29 @@ export async function fetchPersonalTickets() : Promise<Ticket[]> {
 
 export async function fetchProjectTickets(id: number) {
     const res = await call_api(`${API_URL}/private/get-project-tickets/${id}`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data
+}
+
+export async function getComments(id: number) : Promise<TicketComment[]> {
+    const res = await call_api(`${API_URL}/private/comments/${id}`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data
+}
+
+
+export async function createComment(id: number, body:{comment:string, aiGenerated:boolean}) {
+    const res = await call_api(`${API_URL}/private/comment/${id}`, "POSt", body);
 
     if(!res.ok) {
         throw new Error("Failed to Create the Ticket");

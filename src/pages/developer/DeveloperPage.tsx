@@ -11,13 +11,17 @@ import { getStatusColor, PriorityStyles } from '@/styles';
 import { cn } from '@/lib/utils';
 import { AlertCircle, Clock, UserIcon } from 'lucide-react';
 import TicketDetails from '../support/TicketDetails';
+import TicketDetailsDialog from './TicketDetailsDialog';
+import { useTickets } from '@/hooks/useTickets';
 
 const DeveloperPage = () => {
   const { developers, loading, error } = useDevelopers();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(0);
-  const [selectedTicket, setSelectedTicket] = useState<Ticket>(null);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState(0);
+
+  const { changeStatus } = useTickets();
 
   useEffect(() => {
     async function fetch() {
@@ -51,13 +55,11 @@ const DeveloperPage = () => {
                     return (
                       <Card
                         key={ticket.id}
-                        onClick={() => setSelectedTicketId(ticket.id)}
-                        className={cn(
-                          "cursor-pointer border-2 transition-all border-border hover:bg-slate-50 min-h-[180px]",
-                          selectedTicket?.id === ticket.id
-                            ? "shadow-lg bg-slate-50"
-                            : "bg-slate-100"
-                        )}
+                        onClick={() => {
+                          setSelectedTicket(ticket)
+                          setSelectedTicketId(ticket.id)
+                        }}
+                        className={cn("cursor-pointer border-2 transition-all border-border hover:bg-slate-50 min-h-[180px] bg-slate-100")}
                       >
                         <CardContent className="p-6 space-y-4 h-full flex flex-col">
                           {/* Header */}
@@ -99,6 +101,13 @@ const DeveloperPage = () => {
                 </div>
               </ScrollArea>
             </CardContent>
+
+            <TicketDetailsDialog
+              ticket={selectedTicket}
+              open={!!selectedTicket}
+              onClose={() => setSelectedTicket(null)}
+              changeStatus={changeStatus}
+            />
         </Card>
       </div>
     </div>
