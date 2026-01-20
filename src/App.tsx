@@ -10,7 +10,7 @@ import Unauthorized from "./pages/User/UnauthorizedPage";
 import SignUp from "./pages/User/Signup";
 import MainLayout from "./pages/admin/MainLayout";
 import ClientApps from "./pages/client/applications/ClientApps";
-import AllApps from "./pages/admin/application/allApps";
+import AllApps from "./pages/admin/application/AllApps";
 
 
 function App() {
