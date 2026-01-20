@@ -52,7 +52,12 @@ export default function AdminUsersPage() {
           <h1 className="text-3xl font-normal">Users Management</h1>
         </CardHeader>
 
-        <Button variant={"outline"}
+        <div className="flex gap-4">
+          <Button variant={"outline"} onClick={() => navigate("/admin/apps")}>
+            Apps
+          </Button>
+
+          <Button variant={"outline"}
             className=" hover:bg-red-600 hover:text-white"
             onClick={() => {
               logout();
@@ -60,7 +65,8 @@ export default function AdminUsersPage() {
             }}
           >
             Logout <LogOut />
-        </Button>
+          </Button>
+        </div>
       </div>
       <CardContent>
         <Table>

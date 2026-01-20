@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Status } from '@/types';
 import { useAssignmentData } from '@/hooks/useAssignmentData';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { assignTicketToDeveloper, removeTicketAssignee } from '@/services/api';
 import { useComments } from '@/hooks/useComments';
 
@@ -119,6 +119,12 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
             minute: '2-digit'
         });
     };
+
+    
+    const bottomRef = useRef<HTMLDivElement | null>(null)
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [comments])
 
 
     return (
@@ -299,6 +305,7 @@ const TicketDetails = ( { selectedTicket, assignType, setAssignType, reloadTicke
                                     ))
                                 )
                             }
+                            <div ref={bottomRef} />
                         </div>
                     </ScrollArea>
                     

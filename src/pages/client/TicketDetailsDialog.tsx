@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogPortal, DialogOverlay } from '@/components/ui/dialog';
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,8 +39,13 @@ function TicketDetailsDialog({
 
   
   const [newComment, setNewComment] = useState('');
-  
   const {comments, commentsLoading, error, sendComment, loadComments } = useComments(ticket);
+
+  
+  const bottomRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [comments])
     
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -142,6 +147,8 @@ function TicketDetailsDialog({
                       ))
                     )
                   }
+                  
+                  <div ref={bottomRef} />
                 </div> 
               </ScrollArea>
              

@@ -10,6 +10,8 @@ import Unauthorized from "./pages/User/UnauthorizedPage";
 import SignUp from "./pages/User/Signup";
 import MainLayout from "./pages/admin/MainLayout";
 import ClientApps from "./pages/client/applications/ClientApps";
+import AllApps from "./pages/admin/application/allApps";
+
 
 function App() {
   return (
@@ -25,7 +27,13 @@ function App() {
                   <AdminPage />
                 </ProtectedRoute>
               }
-              />
+            />
+            <Route path="/admin/apps" element={
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AllApps />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/developer" element={
               <ProtectedRoute allowedRoles={["DEVELOPER"]}>
                   <DeveloperPage />

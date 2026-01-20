@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogPortal, DialogOverlay } from '@/components/ui/dialog';
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -64,6 +64,11 @@ function TicketDetailsDialog({ ticket, open, onClose, changeStatus }: TicketDeta
       setSaving(false);
     }
   }
+
+  const bottomRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [comments])
             
     
   return (
@@ -185,6 +190,7 @@ function TicketDetailsDialog({ ticket, open, onClose, changeStatus }: TicketDeta
                       ))
                     )
                   }
+                  <div ref={bottomRef} />
                 </div> 
               </ScrollArea>
              
