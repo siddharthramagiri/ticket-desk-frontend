@@ -8,19 +8,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectContent, SelectValue, SelectItem } from '@/components/ui/select';
 import DeadlinePicker from './DeadlinePicker';
 import { createTicket } from '@/services/api';
+import { Application } from '@/types';
 
 
 type AddTicketProps = {
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
+  myApplications: Application[]
 };
-function AddTicket({ open, onClose, onCreated }: AddTicketProps) {
+
+function AddTicket({ open, onClose, onCreated, myApplications }: AddTicketProps) {
 
     const [newTicket, setNewTicket] = useState({
         title: "",
         description: "",
-        applicationName: "",
+        applicationId: 0,
         priority: "LOW",
         deadLine: "",
     });
@@ -31,7 +34,7 @@ function AddTicket({ open, onClose, onCreated }: AddTicketProps) {
         await createTicket({
             title: newTicket.title,
             description: newTicket.description,
-            applicationName: newTicket.applicationName,
+            applicationId: newTicket.applicationId,
             priority: newTicket.priority,
             deadLine: new Date(newTicket.deadLine).toISOString(),
         });
@@ -39,13 +42,13 @@ function AddTicket({ open, onClose, onCreated }: AddTicketProps) {
         setNewTicket({
             title: "",
             description: "",
-            applicationName: "",
+            applicationId: 0,
             priority: "LOW",
             deadLine: "",
         });
-        onCreated();
+            onCreated();
         } catch {
-        alert("Failed to create ticket");
+            alert("Failed to create ticket");
         }
     };
 
@@ -80,11 +83,25 @@ function AddTicket({ open, onClose, onCreated }: AddTicketProps) {
 
                     <div className="flex flex-col">
                         <Label className='py-2' htmlFor="applicationName">Application Name</Label>
-                        <Input
-                            id="applicationName"
-                            value={newTicket.applicationName}
-                            onChange={e => setNewTicket({ ...newTicket, applicationName: e.target.value })}
-                        />
+                        <Select
+                            value={newTicket.applicationId ? String(newTicket.applicationId) : ""}
+                                onValueChange={(value) =>
+                                    setNewTicket({ ...newTicket, applicationId: Number(value) })
+                                }
+                            >
+                            <SelectTrigger className="w-60">
+                                <SelectValue placeholder="Select Application" />
+                            </SelectTrigger>
+
+                            <SelectContent>
+                                {myApplications.map(app => (
+                                    <SelectItem key={app.id} value={String(app.id)}>
+                                    {app.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
                     </div>
 
                     <div className="flex flex-col">

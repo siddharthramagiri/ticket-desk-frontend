@@ -13,6 +13,7 @@ import TicketDetailsDialog from "./TicketDetailsDialog";
 import { Status, Ticket } from "@/types";
 import { getStatusColor, PriorityStyles, getStatusIcon } from "@/styles"
 import StatusIcon from "@/components/StatusIcon";
+import { useApplications } from "@/hooks/useApplication";
 
 const ClientPage = () => {
   type FilterGroup = "ACTIVE" | "DONE";
@@ -27,6 +28,9 @@ const ClientPage = () => {
   const [filter, setFilter] = useState<FilterGroup>("ACTIVE");
   const [isAddTicketOpen, setIsAddTicketOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+
+  const { allApplications, myApplications, loadApplications, 
+      addNewApp, loadMyApplications, ownApplication} = useApplications();
 
 
   const navigate = useNavigate();
@@ -64,6 +68,9 @@ const ClientPage = () => {
           <p className="text-gray-500 mt-1">Manage and track your submitted tickets</p>
         </div>
         <div className="flex gap-4">
+          <Button variant={'outline'} onClick={() => navigate("/client/apps")}>
+            Apps
+          </Button>
           <Button variant={"default"}
             onClick={() => setIsAddTicketOpen(true)}
           >
@@ -156,6 +163,7 @@ const ClientPage = () => {
         open={isAddTicketOpen}
         onClose={() => setIsAddTicketOpen(false)}
         onCreated={loadTickets}
+        myApplications={myApplications}
       />
       <TicketDetailsDialog
         ticket={selectedTicket}

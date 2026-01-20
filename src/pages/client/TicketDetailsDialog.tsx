@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Clock, MessageSquare, Send, UserIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useComments } from '@/hooks/useComments';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 type TicketDetailsDialogProps = {
@@ -37,6 +39,8 @@ function TicketDetailsDialog({
 
   
   const [newComment, setNewComment] = useState('');
+  
+  const {comments, commentsLoading, error, sendComment, loadComments } = useComments(ticket);
     
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -113,31 +117,34 @@ function TicketDetailsDialog({
                 <MessageSquare className="w-5 h-5" />
                 Activity & Comments
               </h3>
-
-              {/* <div className="space-y-4 mb-6">
-              {selectedTicket.comments.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                No comments yet
-                </p>
-                ) : (
-                  selectedTicket.comments.map((comment, idx) => (
-                    <Card key={idx} className="bg-muted/50">
-                    <CardContent className="p-4">
-                    <div className="flex justify-between mb-2">
-                    <span className="text-sm font-medium">
-                    {comment.author}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                    {formatDate(comment.timestamp)}
-                    </span>
-                    </div>
-                    <p className="text-sm">{comment.text}</p>
-                    </CardContent>
-                    </Card>
-                    ))
-                    )}
-                    </div> 
-              */}
+              
+              <ScrollArea className="h-64 pr-4 mb-6">
+                <div className="space-y-4 mb-6">
+                  {comments.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      No comments yet
+                    </p>
+                    ) : (
+                      comments.map((comment, idx) => (
+                        <Card key={idx} className="bg-muted/50">
+                          <CardContent className="p-4">
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm font-medium">
+                                {comment.user?.email}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(comment.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-sm">{comment.comment}</p>
+                          </CardContent>
+                        </Card>
+                      ))
+                    )
+                  }
+                </div> 
+              </ScrollArea>
+             
             </CardContent>
 
               {/* Add Comment */}
@@ -155,8 +162,9 @@ function TicketDetailsDialog({
                   <Button
                     disabled={!newComment.trim()}
                     className="flex items-center gap-2"
+                    onClick={() => sendComment(newComment)}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4"/>
                     Add Comment
                   </Button>
                 </div>

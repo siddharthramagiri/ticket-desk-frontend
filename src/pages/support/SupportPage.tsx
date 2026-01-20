@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { User as UserIcon, Clock, AlertCircle, LogOut, RefreshCwIcon } from 'lucide-react';
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { User as UserIcon, Clock, AlertCircle, LogOut, RefreshCwIcon, TicketsPlane } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '@/services/authService';
-import { Status } from '@/types';
+import { Status, Ticket } from '@/types';
 import { getStatusColor, getStatusIcon } from "@/styles"
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ const SupportPage = () => {
 
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
 
-  const selectedTicket = useMemo(
+  const selectedTicket = useMemo<Ticket | null>(
     () => tickets.find(t => t.id === selectedTicketId) ?? null,
     [tickets, selectedTicketId]
   );
@@ -272,12 +272,25 @@ const SupportPage = () => {
                 </div>
                 
                 <div>
-                  <TicketDetails 
-                    selectedTicket={selectedTicket}
-                    assignType={assignType} setAssignType={setAssignType}
-                    reloadTickets={reloadTickets} changeStatus={changeStatus}
-                  />
+                  {selectedTicket ? (
+                    <TicketDetails
+                      selectedTicket={selectedTicket}
+                      assignType={assignType}
+                      setAssignType={setAssignType}
+                      reloadTickets={reloadTickets}
+                      changeStatus={changeStatus}
+                    />
+                  ) : (
+                    <Card className="p-12 text-center">
+                      <TicketsPlane className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <CardTitle>Select a ticket</CardTitle>
+                      <CardDescription className="mt-2">
+                        Choose a ticket from the list to view details and add comments
+                      </CardDescription>
+                    </Card>
+                  )}
                 </div>
+
                 
               </div>
 

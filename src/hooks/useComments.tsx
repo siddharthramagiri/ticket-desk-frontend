@@ -2,9 +2,9 @@ import { createComment, getComments } from '@/services/api';
 import { Ticket, TicketComment } from '@/types';
 import React, { useCallback, useEffect, useState } from 'react'
 
-export function useComments(ticket: Ticket) {
+export function useComments(ticket: Ticket | null) {
     const [comments, setComments] = useState<TicketComment[]>([]);
-  const [commentsLoading, setCommentsLoading] = useState(true);
+    const [commentsLoading, setCommentsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     
     const loadComments = useCallback(async () => {
@@ -33,6 +33,8 @@ export function useComments(ticket: Ticket) {
 
     
     useEffect(() => {
+        if(!ticket) return;
+        
         loadComments();
         
     }, [loadComments]);

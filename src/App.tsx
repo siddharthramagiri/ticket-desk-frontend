@@ -9,6 +9,7 @@ import SupportPage from "./pages/support/SupportPage";
 import Unauthorized from "./pages/User/UnauthorizedPage";
 import SignUp from "./pages/User/Signup";
 import MainLayout from "./pages/admin/MainLayout";
+import ClientApps from "./pages/client/applications/ClientApps";
 
 function App() {
   return (
@@ -40,6 +41,13 @@ function App() {
             <Route path="/client" element={
                 <ProtectedRoute allowedRoles={["CLIENT"]}>
                   <ClientPage />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route path="/client/apps" element={
+                <ProtectedRoute allowedRoles={["CLIENT"]}>
+                  <ClientApps />
                 </ProtectedRoute>
               }
             />

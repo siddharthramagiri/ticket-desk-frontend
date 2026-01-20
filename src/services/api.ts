@@ -1,4 +1,4 @@
-import { Project, Role, Ticket, TicketComment, User } from "@/types";
+import { Application, Project, Role, Ticket, TicketComment, User } from "@/types";
 import config from "./config";
 
 const API_URL = config.apiUrl;
@@ -112,9 +112,9 @@ export async function updateUserRole(userId: number, role: Role) {
 }
 
 
-export async function createTicket({title, description, applicationName, priority, deadLine}) {
+export async function createTicket({title, description, applicationId, priority, deadLine}) {
     const res = await call_api(`${API_URL}/client/add`, "POST", 
-        {title, description, applicationName, priority, deadLine})
+        {title, description, applicationId, priority, deadLine})
 
     if(!res.ok) {
         throw new Error("Failed to Create the Ticket");
@@ -220,4 +220,52 @@ export async function createComment(id: number, body:{comment:string, aiGenerate
 
     const data = await res.json();
     return data
+}
+
+
+
+export async function fetchAllApplications() : Promise<Application[]> {
+    const res = await call_api(`${API_URL}/public/apps`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+
+export async function fetchMyApplications() : Promise<Application[]> {
+    const res = await call_api(`${API_URL}/client/my-apps`, "GET");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+
+export async function ownNewApplication(id : number) {
+    const res = await call_api(`${API_URL}/client/own-app/${id}`, "PUT");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+export async function addNewApplication(name : string) {
+    const res = await call_api(`${API_URL}/admin/new-app/${name}`, "POST");
+
+    if(!res.ok) {
+        throw new Error("Failed to Create the Ticket");
+    }
+
+    const data = await res.json();
+    return data;
 }
