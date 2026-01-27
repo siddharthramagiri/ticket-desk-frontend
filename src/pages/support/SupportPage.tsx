@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
-import { User as UserIcon, Clock, AlertCircle, LogOut, RefreshCwIcon, TicketsPlane } from 'lucide-react';
+import { User as UserIcon, Clock, AlertCircle, RefreshCwIcon, TicketsPlane } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '@/services/authService';
 import { Status, Ticket } from '@/types';
 import { getStatusColor, getStatusIcon } from "@/styles"
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -173,16 +172,6 @@ const SupportPage = () => {
             // onClick={() => setIsAddTicketOpen(true)}
           >
             + Add New Ticket
-          </Button>
-
-          <Button variant={"outline"}
-            className=" hover:bg-red-600 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            Logout <LogOut />
           </Button>
         </div>
       </div>

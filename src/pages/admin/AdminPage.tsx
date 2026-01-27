@@ -6,9 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { fetchAllUsers, updateUserRole } from "@/services/api"
 import { Role, User } from "@/types"
-import { logout } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
-import { LogOut } from "lucide-react"
 
 const ROLES = ["ADMIN", "DEVELOPER", "CLIENT", "SUPPORT"]
 
@@ -56,16 +54,6 @@ export default function AdminUsersPage() {
           <Button variant={"outline"} onClick={() => navigate("/admin/apps")}>
             Apps
           </Button>
-
-          <Button variant={"outline"}
-            className=" hover:bg-red-600 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            Logout <LogOut />
-          </Button>
         </div>
       </div>
       <CardContent>
@@ -74,7 +62,6 @@ export default function AdminUsersPage() {
             <TableRow>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -101,12 +88,6 @@ export default function AdminUsersPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </TableCell>
-
-                <TableCell className="text-right">
-                  <Button disabled={loading} size="sm">
-                    Save
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}

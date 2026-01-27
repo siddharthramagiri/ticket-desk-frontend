@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { TicketsPlane as Ticket } from "lucide-react";
+import RightLayout from "./RightLayout";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -97,18 +98,7 @@ const Login = () => {
       </div>
 
       {/* Right Side - Image */}
-      <div className="hidden relative lg:block lg:w-1/2">
-        <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-90"></div>
-        <img
-          src="Logo.png"
-          alt="Ticket Desk"
-          className="h-full w-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-gray-900">
-          <h2 className="mb-4 text-3xl font-bold">Jira Inspired Ticketing System</h2>
-          <p className="max-w-md text-center text-lg">"Make Development faster"</p>
-        </div>
-      </div>
+      <RightLayout />
     </div>
   );
 };

@@ -1,26 +1,18 @@
 import { useEffect, useState } from "react"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
-import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "sonner"
-import { fetchAllUsers, updateUserRole } from "@/services/api"
-import { Role, User } from "@/types"
-import { logout } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
-import { LogOut } from "lucide-react"
 import { useApplications } from "@/hooks/useApplication"
 import AddTicket from "./AddApplication"
 
-const ROLES = ["ADMIN", "DEVELOPER", "CLIENT", "SUPPORT"]
 
 const AllApps = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAddApplicationOpen, setIsAddApplicationOpen] = useState(false);
 
-  const { allApplications, myApplications, loadApplications, 
-      addNewApp, loadMyApplications, ownApplication} = useApplications();
+  const { allApplications, myApplications, loadApplications, addNewApp} = useApplications();
 
   const navigate = useNavigate();
 
@@ -57,16 +49,6 @@ const AllApps = () => {
 
             <Button variant={"outline"} onClick={() => navigate("/admin")}>
               Back
-            </Button>
-
-            <Button variant={"outline"}
-              className=" hover:bg-red-600 hover:text-white"
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
-            >
-              Logout <LogOut />
             </Button>
           </div>
         </div>

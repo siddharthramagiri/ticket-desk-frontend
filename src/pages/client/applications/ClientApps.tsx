@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { logout } from "@/services/authService";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import { useApplications } from "@/hooks/useApplication";
 import { cn } from "@/lib/utils";
 
@@ -57,15 +55,6 @@ const ClientApps = () => {
         <div className="flex gap-4">
           <Button variant={"default"} onClick={() => navigate("/client")}>
             Back
-          </Button>
-          <Button variant={"outline"}
-            className=" hover:bg-red-600 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            Logout <LogOut />
           </Button>
         </div>
       </div>

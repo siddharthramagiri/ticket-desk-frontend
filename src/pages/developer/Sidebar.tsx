@@ -10,9 +10,8 @@ import { useEffect, useState } from "react"
 
 
 import { User, Project } from "@/types";
-import { LogOut, X } from "lucide-react";
+import { X } from "lucide-react";
 import { createNewProject, getAllProjects } from "@/services/api"
-import { logout } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
 
 
@@ -71,16 +70,6 @@ export function Sidebar({ developers, selectedId, setSelectedId }) {
             </div>
           </div>
         </div>
-
-        <Button variant={"outline"}
-            className="mt-auto w-full hover:bg-red-600 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            Logout <LogOut />
-        </Button>
       </aside>
 
       {showDialog && (

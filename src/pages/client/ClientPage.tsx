@@ -6,9 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddTicket from "./AddTicket";
 import { fetchTicketsCreatedByUser } from "@/services/api";
-import { logout } from "@/services/authService";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import TicketDetailsDialog from "./TicketDetailsDialog";
 import { Status, Ticket } from "@/types";
 import { getStatusColor, PriorityStyles, getStatusIcon } from "@/styles"
@@ -75,16 +73,6 @@ const ClientPage = () => {
             onClick={() => setIsAddTicketOpen(true)}
           >
             + Add New Ticket
-          </Button>
-
-          <Button variant={"outline"}
-            className=" hover:bg-red-600 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            Logout <LogOut />
           </Button>
         </div>
       </div>

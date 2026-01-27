@@ -7,7 +7,7 @@ export function Sidebar() {
   const active = "bg-muted font-medium"
 
   return (
-    <aside className="w-64 border-r p-4">
+    <aside className="w-64 shrink-0 border-r p-4">
       <h2 className="text-xl mb-6">Ticket Desk</h2>
 
       <nav className="space-y-2">

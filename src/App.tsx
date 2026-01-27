@@ -8,7 +8,7 @@ import DeveloperPage from "./pages/developer/DeveloperPage";
 import SupportPage from "./pages/support/SupportPage";
 import Unauthorized from "./pages/User/UnauthorizedPage";
 import SignUp from "./pages/User/Signup";
-import MainLayout from "./pages/admin/MainLayout";
+import MainLayout from "./pages/MainLayout";
 import ClientApps from "./pages/client/applications/ClientApps";
 import AllApps from "./pages/admin/application/AllApps";
 

@@ -31,21 +31,21 @@ function AddTicket({ open, onClose, onCreated, myApplications }: AddTicketProps)
 
     const handleCreateTicket = async () => {
         try {
-        await createTicket({
-            title: newTicket.title,
-            description: newTicket.description,
-            applicationId: newTicket.applicationId,
-            priority: newTicket.priority,
-            deadLine: new Date(newTicket.deadLine).toISOString(),
-        });
-        onClose();
-        setNewTicket({
-            title: "",
-            description: "",
-            applicationId: 0,
-            priority: "LOW",
-            deadLine: "",
-        });
+            await createTicket({
+                title: newTicket.title,
+                description: newTicket.description,
+                applicationId: newTicket.applicationId,
+                priority: newTicket.priority,
+                deadLine: new Date(newTicket.deadLine).toISOString(),
+            });
+            onClose();
+            setNewTicket({
+                title: "",
+                description: "",
+                applicationId: 0,
+                priority: "LOW",
+                deadLine: "",
+            });
             onCreated();
         } catch {
             alert("Failed to create ticket");

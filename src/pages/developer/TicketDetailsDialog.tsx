@@ -65,6 +65,16 @@ function TicketDetailsDialog({ ticket, open, onClose, changeStatus }: TicketDeta
     }
   }
 
+  const handleSendComment = async () => {
+    try {
+      await sendComment(newComment);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setNewComment("");
+    }
+  }
+
   const bottomRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -211,7 +221,7 @@ function TicketDetailsDialog({ ticket, open, onClose, changeStatus }: TicketDeta
                   <Button
                     disabled={!newComment.trim()}
                     className="flex items-center gap-2"
-                    onClick={() => sendComment(newComment)}
+                    onClick={handleSendComment}
                   >
                     <Send className="w-4 h-4"/>
                     Add Comment

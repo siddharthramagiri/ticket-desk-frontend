@@ -41,6 +41,16 @@ function TicketDetailsDialog({
   const [newComment, setNewComment] = useState('');
   const {comments, commentsLoading, error, sendComment, loadComments } = useComments(ticket);
 
+  const handleSendComment = async () => {
+      try {
+        await sendComment(newComment);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setNewComment("");
+      }
+  }
+
   
   const bottomRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -169,7 +179,7 @@ function TicketDetailsDialog({
                   <Button
                     disabled={!newComment.trim()}
                     className="flex items-center gap-2"
-                    onClick={() => sendComment(newComment)}
+                    onClick={handleSendComment}
                   >
                     <Send className="w-4 h-4"/>
                     Add Comment
